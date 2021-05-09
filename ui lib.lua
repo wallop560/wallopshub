@@ -2042,7 +2042,7 @@ function(key)
    if key.KeyCode == library.TabsBind then
       local CC = workspace.CurrentCamera
       local Char = game.Players.LocalPlayer.Character
-      if Char:FindFirstChild("Head") then
+      if Char:FindFirstChild('Head') then
          local Zoom = (CC.CFrame.Position - Char.Head.Position).magnitude
          local focusedTextbox = uis:GetFocusedTextBox()
          if focusedTextbox then
