@@ -1647,3 +1647,4 @@ function library:Window(name)
 	end
 	return Tabstbl
 end
+return library
