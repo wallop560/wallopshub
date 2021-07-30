@@ -18,6 +18,9 @@ local ThemeColours = {
 	Sections = Color3.fromRGB(45,45,75),
 	Buttons = Color3.fromRGB(60,60,110)
 }
+function library:GetThemes()
+	return ThemeColours
+end
 local themeobjects = {}
 function GiveTheme(object,themename,themeprop,offset)
 	themeprop = themeprop or 'BackgroundColor3'
