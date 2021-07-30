@@ -316,6 +316,7 @@ function library:Window(name)
 		namelab.Text = txt
 	end
 	function Tabstbl:Kill()
+		print('lol killed')
 		uilib2:Destroy()
 	end
 	local firstTab = true
