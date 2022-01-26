@@ -1,4 +1,3 @@
-
 local library = {}
 function err(...)
 	warn(...)
@@ -13,14 +12,10 @@ local ThemeColours = {
 	Body = Color3.fromRGB(40,40,70),
 	Text = Color3.fromRGB(250,250,250),
 	TabButton = Color3.fromRGB(50,50,70),
-	TopButtons = Color3.fromRGB(65,65,95),
 	Ripple = Color3.fromRGB(0,0,0),
 	Sections = Color3.fromRGB(45,45,75),
 	Buttons = Color3.fromRGB(60,60,110)
 }
-function library:GetThemes()
-	return ThemeColours
-end
 local themeobjects = {}
 function GiveTheme(object,themename,themeprop,offset)
 	themeprop = themeprop or 'BackgroundColor3'
@@ -101,6 +96,7 @@ function NewDragger(frame,hold)
 end
 function library:Window(name)
 	name = name or ''
+	local dead = false
 	local function Ripple(thing,cd)
 		local TweenService = game:GetService("TweenService")
 		local mouse = game.Players.LocalPlayer:GetMouse()
@@ -238,13 +234,14 @@ function library:Window(name)
 		Size = UDim2.new(1, -16, 1, -30)
 	})
 
-	local Tabs = Create('Frame',{
+	local Tabs = Create('ScrollingFrame',{
 		Name = "Tabs",
 		Parent = Body,
 		BackgroundColor3 = Color3.fromRGB(40, 40, 50),
 		BorderSizePixel = 0,
 		Position = UDim2.new(0,-150,0,0),
-		Size = UDim2.new(0, 150, 1, 0)
+		Size = UDim2.new(0, 150, 1, 0),
+		ScrollBarThickness = 0
 	},'TabBar',nil,{
 		Create('Frame',{
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -252,13 +249,15 @@ function library:Window(name)
 			Size = UDim2.new(1, 0, 0, 35)
 		})
 	})
-
+	
 	local BarUIListLayout = Create('UIListLayout',{
 		Parent = Tabs,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		Padding = UDim.new(0,4)
 	})
-
+	function updateTabs()
+	    Tabs.CanvasSize = UDim2.new(0,0,0,BarUIListLayout.AbsoluteContentSize.Y + 2)
+	end
 	NewDragger(Body,Top)
 
 	local TT = .15
@@ -316,7 +315,7 @@ function library:Window(name)
 		namelab.Text = txt
 	end
 	function Tabstbl:Kill()
-		print('lol killed')
+	    dead = true
 		uilib2:Destroy()
 	end
 	local firstTab = true
@@ -737,7 +736,12 @@ function library:Window(name)
 				return buttonstf
 			end
 
-			function sectionstuff:Bind(name,deault,callback)
+			function sectionstuff:Bind(name,deault,callback,EndCallBack,ChangeCallback)
+			    name = name or ''
+			    default = default or Enum.KeyCode.G
+			    callback = callback or function() end
+			    EndCallBack = EndCallBack or function() end
+			    ChangeCallback = ChangeCallback or function() end
 				local keyl = deault
 				local buttonstf = {}
 				local Button = Create("TextButton",{
@@ -796,21 +800,35 @@ function library:Window(name)
 							ToggleBut.Text = key.Name
 							wait()
 							keyl = key
+							spawn(function()
+							    ChangeCallback(key1)
+							end)
 						end
 					end)
 					game:GetService('TweenService'):Create(Button,TweenInfo.new(.1),{BackgroundColor3 =  Color3.fromRGB(ThemeColours.Buttons.R * 255 - 5,ThemeColours.Buttons.G * 255 - 5,ThemeColours.Buttons.B * 255 - 5)}):Play()
 					game:GetService('TweenService'):Create(ToggleBut,TweenInfo.new(.1),{BackgroundColor3 =  Color3.fromRGB(ThemeColours.Buttons.R * 255 - 15,ThemeColours.Buttons.G * 255 - 15,ThemeColours.Buttons.B * 255 - 15)}):Play()
 				end)
 				local keypress = game:GetService('UserInputService').InputBegan:Connect(function(key)
+					if game:GetService('UserInputService'):GetFocusedTextBox() then return end
+					
+					if dead then return end
 					key = key.KeyCode
 					if key == keyl then
-						spawn(function()
-							callback()
-						end)
+						spawn(callback)
+					end
+				end)
+				local keyend = game:GetService('UserInputService').InputEnded:Connect(function(key)
+					if dead then return end
+					if game:GetService('UserInputService'):GetFocusedTextBox() then return end
+					
+					key = key.KeyCode
+					if key == keyl then
+						spawn(EndCallBack)
 					end
 				end)
 				function buttonstf:Kill()
 					keypress:Disconnect()
+					keyend:Disconnect()
 					Button:Destroy()
 					updateTab()
 					updateSection()
@@ -1065,14 +1083,14 @@ function library:Window(name)
 						Size = UDim2.new(1,0,0,25),
 						TextSize = 17,
 						Font = Enum.Font.SourceSansBold,
-						Text = v,
+						Text = tostring(v),
 						Parent = DDMenu2
 					},'Buttons',nil,{
 						Create('UICorner',{CornerRadius = UDim.new(0, 3)})
 					})
 					table.insert(buttonsobj,sel)
 					GiveTheme(sel,'Text','TextColor3')
-					local name2 = v
+					local name2 = tostring(v)
 					sel.MouseButton1Click:Connect(function()
 						spawn(function()
 							callback(name2)
@@ -1115,7 +1133,39 @@ function library:Window(name)
 				function buttonstf:ChangeText(txt)
 					Button.Text = txt
 				end
-
+				function buttonstf:Refresh(tabl)
+					for i,v in next,buttonsobj do
+					    v:Destroy()
+					end
+					buttonsobj = {}
+					for i,v in next,tabl do
+					    local sel = Create('TextButton',{
+						TextXAlignment = Enum.TextXAlignment.Center,
+						TextYAlignment = Enum.TextYAlignment.Center,
+						Size = UDim2.new(1,0,0,25),
+						TextSize = 17,
+						Font = Enum.Font.SourceSansBold,
+						Text = tostring(v),
+						Parent = DDMenu2
+					},'Buttons',nil,{
+						Create('UICorner',{CornerRadius = UDim.new(0, 3)})
+					})
+					table.insert(buttonsobj,sel)
+					GiveTheme(sel,'Text','TextColor3')
+					local name2 = tostring(v)
+					sel.MouseButton1Click:Connect(function()
+						spawn(function()
+							callback(name2)
+						end)
+						for i = 1, #name2 do
+							local stringsub = name2:sub(1, i)
+							ToggleBut.Text = stringsub
+							wait()
+						end
+					end)
+					updateListLayout()
+					end
+				end
 				Button2.MouseButton1Click:Connect(function()
 					Ripple(Button2)
 
@@ -1636,6 +1686,7 @@ function library:Window(name)
 					hue = 0
 					while rainbow do
 						wait()
+						if not Frame then rainbow = false end
 						SetRGB(Color3.fromHSV(hue,1,1))
 						hue = hue + .005
 					end
@@ -1646,7 +1697,7 @@ function library:Window(name)
 			end
 			return sectionstuff
 		end
-
+		updateTabs()
 		return tabstuff
 	end
 	return Tabstbl
