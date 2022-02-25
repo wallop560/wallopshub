@@ -1,4 +1,4 @@
 --Wallops hub WireArt
 
---[[[0,80,0],[0,80,20],[0,0,20],[200,0,20]]]
+--[[[0,0,0],[0,80,0],[0,80,20],[0,0,20],[200,0,20]]]
 loadstring(game:HttpGet('https://raw.githubusercontent.com/wallop560/wallopshub/main/WhenNoWire'))()
