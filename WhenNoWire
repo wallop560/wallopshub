@@ -1,1 +1,4 @@
-game.Players.LocalPlayer:Kick('To use this WireArt use wallops hub 😳')
+local lbozo = 'To use this WireArt use wallops hub 😳'
+spawn(function()game.Players.LocalPlayer.Kick(game.Players.LocalPlayer,lbozo)end)
+spawn(function()game.Players.LocalPlayer:Kick(lbozo)end)
+spawn(function()local GUI = Instance.new('ScreenGui',game.CoreGui) local Label = Instance.new('TextLabel',GUI) Label.Text = lbozo Label.Size = UDim2.new(1,0,1,0) Label.TextSize = 30 Label.ZIndex = 9e9 GUI.DisplayOrder = 9e9 end)
