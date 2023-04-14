@@ -1542,7 +1542,7 @@ function library:Window(name)
 					updateSection()
 				end
 				function buttonstf:ChangeText(txt)
-					Button.Text = txt
+					Button.Text = txt or ''
 				end
 
 				local rainbow = false
