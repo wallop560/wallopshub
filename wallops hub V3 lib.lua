@@ -509,12 +509,15 @@ function library:Window(name)
 			end)
 
 			function sectionstuff:ChangeTitle(ttl)
-				SectionName.Text = ttl
+				SectionName.Text = ttl or ''
 			end
 			function sectionstuff:Kill()
 				section:Destroy()
 			end
 			function sectionstuff:Toggle(name,toggled,callback)
+			    name = name or ''
+			    toggled = toggled or false
+			    callback = callback or function() end
 				local tglstuff = {}
 				local tgl = toggled
 				local Button = Create("TextButton",{
@@ -616,6 +619,8 @@ function library:Window(name)
 				return tglstuff
 			end
 			function sectionstuff:Button(name,CallBack)
+			    name = name or ''
+			    CallBack = CallBack or function() end
 				local buttonstf = {}
 				local Button = Create("TextButton",{
 					Name = "Button",
@@ -661,6 +666,10 @@ function library:Window(name)
 			end
 
 			function sectionstuff:Box(name,typev,deault,callback)
+			    name = name or ''
+			    typev = typev or ''
+			    default = default or ''
+			    callback = callback or function() end
 				local buttonstf = {}
 				local Button = Create("TextButton",{
 					Name = "Button",
@@ -847,6 +856,11 @@ function library:Window(name)
 			end
 
 			function sectionstuff:Slider(name,min,max,Default,Inc,CallBack)
+			    name = name or ''
+			    min,max = min or 0,max or 1
+			    Default = Default or 0
+			    Inc = Inc or 1
+			    CallBack = CallBack or function() end
 				local buttonstf = {}
 				local Button = Create("TextButton",{
 					Name = "Button",
@@ -984,6 +998,9 @@ function library:Window(name)
 				return buttonstf
 			end
 			function sectionstuff:DropDown(name,tabl,callback)
+			    name = name or ''
+			    tabl = tabl or {}
+			    callback = callback or function() end
 				local normsize = UDim2.new(0,245, 0, 83)
 				local buttonstf = {}
 				local Button = Create("TextButton",{
@@ -1216,6 +1233,9 @@ function library:Window(name)
 			end
 
 			function sectionstuff:ColorPicker(name,clr,callback)
+			    name = name or ''
+			    clr = clr or Color3.new(0,0,0)
+			    callback = callback or function() end
 				local hue,sat,brightness = Color3.toHSV(clr)
 
 				local normsize = UDim2.new(0,245, 0, 120)
